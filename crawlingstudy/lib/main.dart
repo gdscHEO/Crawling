@@ -29,6 +29,8 @@ class _HomeState extends State<Home> {
 
   var url = Uri.parse("https://www.10000recipe.com/recipe/6930302");
 
+  Widget show = Center(child: CircularProgressIndicator());
+
   void initState() {
     super.initState();
     getData();
@@ -69,15 +71,13 @@ class _HomeState extends State<Home> {
   //전체 조리 순서 값들 (맨 마지막에 사진이 넣는 칸이 있어서 출력할 때 length-1로 할것!!)
   // print(element.children[10].text.toString());
 
-  Future getData() async {
+  Future<void> getData() async {
     var res = await http.get(url);
     final body = res.body;
     final document = parser.parse(body);
 
-    var response =
-        document.getElementsByClassName("col-xs-9").forEach((element) {
-      setState(() {
-        ifm.add(info(
+    document.getElementsByClassName("col-xs-9").forEach((element) {
+      ifm.add(info(
             image: element.children[0].children[2].children[0].attributes['src']
                 .toString(),
             title: element.children[1].children[0].text.toString(),
@@ -86,6 +86,8 @@ class _HomeState extends State<Home> {
             seasoning:
                 element.children[5].children[1].children[1].text.toString(),
             step: element.children[10].text.toString()));
+      setState(() {
+        show = showResult();
       });
     });
 
@@ -106,24 +108,31 @@ class _HomeState extends State<Home> {
         //     itemBuilder: (context, index) {
         //       Text("${ifm[index].material}");
         //     }),
-        child: Center(
-          child: Column(
-            children: [
-              Image.network(ifm[0].image),
-              SizedBox(
-                height: 10,
-              ),
-              Text("${ifm[0].title}"),
-              Text("${ifm[0].material}"),
-
-              // Text("${ifm[0].seasoning}"),
-              // Text("${ifm[0].step}"),
-              // ListView.builder(
-              //     itemBuilder: (BuildContext context, int index) =>
-              //         Text("${ifm[index].material}"))
-            ],
-          ),
+        child: show,
         ),
+      );
+  }
+
+  Widget showResult(){
+    
+    //material값을 replaceAll을 통해 가공처리해준다
+    //결과부분은 0번 인덱스에 [재료] 라는 값이 들어가고, 짝수번째 인덱스마다 재료와 값이 나오므로 짝수번 인덱스들 출력하면될듯
+    var matResult =ifm[0].material.replaceAll(' ','').replaceAll('\n', ' ').replaceAll('  ', '\t').split('\t');
+
+    //step부분도 이런식으로 접근해야되지않을까..싶음
+    var stepResult = ifm[0].step.split('\n');
+    
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Image.network(ifm[0].image),
+                SizedBox(
+                  height: 10,
+                ),
+                Text("${ifm[0].title}"),
+                Text("${matResult}"),
+                Text('${stepResult}')
+        ],
       ),
     );
   }
