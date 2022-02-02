@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10),
                 // itemCount: recipe.length,
-                itemCount: 4,
+                itemCount: 5,
                 //                 GestureDetector(
                 //   onTap: () => ......,
                 //   child: Card(...),
@@ -112,47 +112,29 @@ class _HomeState extends State<Home> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // if(Image.network(recipe[index].image !=null &&))
-
-                          Stack(
-                            children: [
-                              ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(recipe[index].image)
-                                  //영상이나 사진이 없을 경우 오류가 남.. 그리고 레시피 추천만 있어서 html에 맞춰서 못가져오는 문제가 발생함..
-                                  //일단 영상이거나 사진이 없을 경우는 assets/null.png로 사진을 대체하고자 하는 데 그것도 잘 안되는 상황 흠..
-                                  // recipe[index].image != null &&
-                                  // recipe[index].image.isNotEmpty
-                                  // ? Image.network(recipe[index].image)
-                                  // : null,
-                                  ),
-                              //위에 숫자 세줌.
-                              // Align(
-                              //   alignment: Alignment.topRight,
-                              //   child: Text(
-                              //     index.toString(),
-                              //     style: const TextStyle(
-                              //         color: Colors.red,
-                              //         fontSize: 22,
-                              //         fontWeight: FontWeight.bold),
-                              //   ),
-                              // )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            "${recipe[index].title}",
-                            style: _style,
-                          ),
-                        ],
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            // if(Image.network(recipe[index].image !=null &&))
+                      
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: getImage(recipe[index].image)
+                                //받아온 레시피 이미지 값 넘겨주기
+                                ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Text(
+                              "${recipe[index].title}",
+                              style: _style,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -160,6 +142,14 @@ class _HomeState extends State<Home> {
               ),
             ),
     );
+  }
+
+  //이미지의 결과가 없다면 null이미지 출력
+  getImage(String path){
+    if(path == 'null'){
+      return Image.asset('assets/null.png');
+    }
+    return Image.network(path);
   }
 
   TextStyle _style = TextStyle(color: Colors.white, fontSize: 18);
