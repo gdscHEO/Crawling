@@ -27,10 +27,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var name = '오이';
+  var name = '토마토';
   List<picture> recipe = [];
-  var url = Uri.parse('https://www.10000recipe.com/recipe/list.html?q=' +
-      name); // 주소 입력시 그 주소 html 파싱
+
   //가능 => 김치, 토마토
   //불가능 => 오이, 피망
 
@@ -40,17 +39,12 @@ class _HomeState extends State<Home> {
     setState(() {
       isLoading = true;
     });
+    var url = Uri.parse('https://www.10000recipe.com/recipe/list.html?q=' +
+        name); // 주소 입력시 그 주소 html 파싱
 
     var res = await http.get(url);
     final body = res.body;
     final document = parser.parse(body);
-
-/*
-      print(element.children[0].children[0].children[0].attributes['src']
-          .toString()); //사진이 쭈르륵 나옴
-      // print(element.children[1].text.toString()); //글씨가 다 나옴 평점까지
-      print(element.children[1].children[0].text.toString()); //제목만 수집!
-*/
 
     var response = document
         .getElementsByClassName("common_sp_list_ul ea4")[1]
@@ -61,6 +55,7 @@ class _HomeState extends State<Home> {
           image: element.children[0].children[0].children[0].attributes['src']
               .toString(),
           title: element.children[1].children[0].text.toString(),
+          url: element.children[0].children[0].attributes['href'].toString(),
         ));
       });
     });
@@ -117,12 +112,11 @@ class _HomeState extends State<Home> {
                               height: 10,
                             ),
                             // if(Image.network(recipe[index].image !=null &&))
-
                             ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: getImage(recipe[index].image)
-                                //받아온 레시피 이미지 값 넘겨주기
-                                ),
+                              borderRadius: BorderRadius.circular(10),
+                              child: getImage(recipe[index].image),
+                              //받아온 레시피 이미지 값 넘겨주기
+                            ),
                             SizedBox(
                               height: 15,
                             ),
@@ -130,6 +124,7 @@ class _HomeState extends State<Home> {
                               "${recipe[index].title}",
                               style: _style,
                             ),
+                            Text("${recipe[index].url}"),
                           ],
                         ),
                       ),
@@ -155,6 +150,7 @@ class _HomeState extends State<Home> {
 class picture {
   String image;
   String title;
+  String url;
 
-  picture({required this.image, required this.title});
+  picture({required this.image, required this.title, required this.url});
 }

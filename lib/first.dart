@@ -42,7 +42,9 @@ class _firstState extends State<first> {
       isLoading = true;
     });
 
-    var url = Uri.parse("https://www.10000recipe.com/recipe/6930302");
+    var food;
+    var url = Uri.parse("https://www.10000recipe.com" + food);
+
     var res = await http.get(url);
     final body = res.body;
     var document = parser.parse(res.body);
