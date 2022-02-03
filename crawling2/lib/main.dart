@@ -1,36 +1,30 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 
-// class first extends StatefulWidget {
-//   const first({Key? key}) : super(key: key);
-
-//   @override
-//   _firstState createState() => _firstState();
-// }
-
-// class _firstState extends State<first> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("다음 창"),
-//       ),
-//       body: Center(
-//         child: Text("하이"),
-//       ),
-//     );
-//   }
-// }
-
-class first extends StatefulWidget {
-  const first({Key? key}) : super(key: key);
-
-  @override
-  _firstState createState() => _firstState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _firstState extends State<first> {
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(title: 'Material App', home: Home());
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   List<t> tt = [];
   List<mtrl> mm = [];
   List<st> ss = [];
@@ -42,7 +36,7 @@ class _firstState extends State<first> {
       isLoading = true;
     });
 
-    var url = Uri.parse("https://www.10000recipe.com/recipe/6930302");
+    var url = Uri.parse("https://www.10000recipe.com/recipe/6923484");
     var res = await http.get(url);
     final body = res.body;
     var document = parser.parse(res.body);
@@ -102,10 +96,10 @@ class _firstState extends State<first> {
 
     // 요리 과정
     var a = document.getElementsByClassName('view_step_cont'); // 요리 과정 관련 태그 찾기
-    // var aaa = a[0].getElementsByClassName('media-body');
+    var aaa = a[0].getElementsByClassName('media-body');
     for (var i = 1; i < a.length + 1; i++) {
       var process =
-          '$i: ${a[i - 1].text.trim().replaceAll('\n', ' ')}'.toString();
+          '$i: ${aaa[i - 1].text.trim().replaceAll('\n', ' ')}'.toString();
 
       // 이미지 태그의 주소값 찾기
       var b = a[i - 1].getElementsByTagName('img');
@@ -162,7 +156,7 @@ class _firstState extends State<first> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('레시피'),
+        title: const Text('test'),
       ),
       body: isLoading
           ? const Center(

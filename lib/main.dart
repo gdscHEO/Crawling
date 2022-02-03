@@ -27,8 +27,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  var name = '오이';
   List<picture> recipe = [];
-  var url = Uri.parse("https://www.10000recipe.com/recipe/list.html?q=토마토");
+  var url = Uri.parse('https://www.10000recipe.com/recipe/list.html?q=' +
+      name); // 주소 입력시 그 주소 html 파싱
   //가능 => 김치, 토마토
   //불가능 => 오이, 피망
 
@@ -46,10 +48,8 @@ class _HomeState extends State<Home> {
 /*
       print(element.children[0].children[0].children[0].attributes['src']
           .toString()); //사진이 쭈르륵 나옴
-
       // print(element.children[1].text.toString()); //글씨가 다 나옴 평점까지
       print(element.children[1].children[0].text.toString()); //제목만 수집!
-
 */
 
     var response = document
@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Web Scrapping"),
+        title: const Text("레시피 추천"),
       ),
       body: isLoading
           ? const Center(
@@ -95,11 +95,8 @@ class _HomeState extends State<Home> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10),
                 // itemCount: recipe.length,
-                itemCount: 5,
-                //                 GestureDetector(
-                //   onTap: () => ......,
-                //   child: Card(...),
-                // );
+                itemCount: 4,
+
                 itemBuilder: (context, index) => Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -120,7 +117,7 @@ class _HomeState extends State<Home> {
                               height: 10,
                             ),
                             // if(Image.network(recipe[index].image !=null &&))
-                      
+
                             ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: getImage(recipe[index].image)
@@ -145,8 +142,8 @@ class _HomeState extends State<Home> {
   }
 
   //이미지의 결과가 없다면 null이미지 출력
-  getImage(String path){
-    if(path == 'null'){
+  getImage(String path) {
+    if (path == 'null') {
       return Image.asset('assets/null.png');
     }
     return Image.network(path);
