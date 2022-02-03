@@ -52,14 +52,12 @@ class _HomeState extends State<Home> {
           .getElementsByClassName('common_sp_caption_tit line2')[0]
           .text
           .toString();
-      print(name);
 
       var pic = response[i]
           .getElementsByClassName('common_sp_link')[0]
           .children[0]
           .attributes['src']
           .toString();
-      print(pic);
 
       var go = response[i]
           .getElementsByClassName('common_sp_link')[0]
