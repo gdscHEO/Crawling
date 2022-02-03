@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:get/get.dart';
 
 // class first extends StatefulWidget {
 //   const first({Key? key}) : super(key: key);
@@ -42,8 +43,8 @@ class _firstState extends State<first> {
       isLoading = true;
     });
 
-    var food;
-    var url = Uri.parse("https://www.10000recipe.com" + food);
+    var url =
+        Uri.parse("https://www.10000recipe.com" + Get.arguments["recipe"]);
 
     var res = await http.get(url);
     final body = res.body;
@@ -73,9 +74,13 @@ class _firstState extends State<first> {
       var lst = []; // 재료가 저장될 리스트
 
       for (var i = 0; i < one.length; i++) {
-        var d = one[i].text.split(' ');
+        var d = one[i].text.split('  ');
         for (var i = 0; i < d.length; i++) {
           if (d[i] != '' && d[i] != '\n') {
+            // print(d[i]);
+            // if (d[i].length != 1) {
+            //   lst.add(d[i].trim());
+            // }
             lst.add(d[i].trim());
           }
         }
@@ -88,6 +93,7 @@ class _firstState extends State<first> {
         // 재료의 개수가 적혀있는 경우와 아닐 경우를 구분해서 따로 출력
         for (var i = 1; i < lst.length + 1; i++) {
           // print('${lst[i - 1]} : ${lst[i]}');
+
           res = '${lst[i - 1]} : ${lst[i]}'.toString();
           mm.add(mtrl(material: res.toString()));
 
@@ -104,10 +110,19 @@ class _firstState extends State<first> {
 
     // 요리 과정
     var a = document.getElementsByClassName('view_step_cont'); // 요리 과정 관련 태그 찾기
-    // var aaa = a[0].getElementsByClassName('media-body');
+
     for (var i = 1; i < a.length + 1; i++) {
-      var process =
-          '$i: ${a[i - 1].text.trim().replaceAll('\n', ' ')}'.toString();
+      // bb
+      var process = a[i - 1].getElementsByClassName('media-body')[0].text;
+
+      // 반복문을 통해 필요없는 글을 "" 대체
+      var p = a[i - 1]
+          .getElementsByClassName('media-body')[0]
+          .getElementsByClassName(
+              "step_add"); // 필요 없는 글 리스트(ex) 신선마켓, 오이 1개 등..)
+      for (var j in p) {
+        process = process.replaceAll(j.text, "");
+      }
 
       // 이미지 태그의 주소값 찾기
       var b = a[i - 1].getElementsByTagName('img');
@@ -115,11 +130,8 @@ class _firstState extends State<first> {
       var txt = c['src'].toString();
 
       // 반복문으로 하나씩 출력
-      // print(
-      // '$i: ${a[i - 1].text.trim().replaceAll('\n', ' ')}'); // trim()은 문자열 양 옆의 공백 제거 해줌
       ss.add(st(step: process.toString(), picture: txt));
     }
-
     setState(() {
       isLoading = false;
     });
@@ -170,76 +182,79 @@ class _firstState extends State<first> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SafeArea(
-              child: Expanded(
-                  child: Container(
-                      padding: EdgeInsets.all(20),
-                      child: ListView.builder(
-                          itemCount: ss.length + 1,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Container(
-                                // padding: EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-                                    Column(children: [
-                                      // SizedBox(
-                                      //   height: 20,
-                                      // ),
-                                      Text(
-                                        "${tt[0].title}",
-                                        style: TextStyle(
-                                            fontSize: 23,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Image.network(
-                                        tt[0].image,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ]),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          height: 30,
-                                        ),
-                                        const Text(
-                                          "재료 및 양념",
+          : Column(
+              children: [
+                Expanded(
+                    child: Container(
+                        padding: EdgeInsets.all(20),
+                        child: ListView.builder(
+                            itemCount: ss.length + 1,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return Container(
+                                  // padding: EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      Column(children: [
+                                        // SizedBox(
+                                        //   height: 20,
+                                        // ),
+                                        Text(
+                                          "${tt[0].title}",
                                           style: TextStyle(
-                                              fontSize: 20,
+                                              fontSize: 23,
                                               fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(
                                           height: 10,
                                         ),
-                                        Text(
-                                          mater,
-                                          style: TextStyle(fontSize: 14),
-                                          textAlign: TextAlign.center,
+                                        Image.network(
+                                          tt[0].image,
+                                          fit: BoxFit.contain,
                                         ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                          "조리 순서",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ), //재료 및 양념
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return getBox(ss[index - 1]);
-                            }
-                          })))),
+                                      ]),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height: 30,
+                                          ),
+                                          const Text(
+                                            "재료 및 양념",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            mater,
+                                            style: TextStyle(fontSize: 14),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          const Text(
+                                            "조리 순서",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ), //재료 및 양념
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return getBox(ss[index - 1]);
+                              }
+                            }))),
+              ],
+            ),
     );
   }
 }

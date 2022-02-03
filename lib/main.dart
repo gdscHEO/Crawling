@@ -2,6 +2,7 @@ import 'package:crawling/first.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:get/get.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,9 +13,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Material App',
       home: Home(),
+      getPages: [GetPage(name: '/first', page: () => first())],
     );
   }
 }
@@ -27,11 +29,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var name = '토마토';
+  var name = '오이';
   List<picture> recipe = [];
-
-  //가능 => 김치, 토마토
-  //불가능 => 오이, 피망
 
   bool isLoading = false;
 
@@ -46,19 +45,30 @@ class _HomeState extends State<Home> {
     final body = res.body;
     final document = parser.parse(body);
 
-    var response = document
-        .getElementsByClassName("common_sp_list_ul ea4")[1]
-        .getElementsByClassName("common_sp_list_li")
-        .forEach((element) {
-      setState(() {
-        recipe.add(picture(
-          image: element.children[0].children[0].children[0].attributes['src']
-              .toString(),
-          title: element.children[1].children[0].text.toString(),
-          url: element.children[0].children[0].attributes['href'].toString(),
-        ));
-      });
-    });
+    //링크
+    var response = document.getElementsByClassName('common_sp_list_li');
+    for (var i = 0; i < response.length; i++) {
+      var name = response[i]
+          .getElementsByClassName('common_sp_caption_tit line2')[0]
+          .text
+          .toString();
+      print(name);
+
+      var pic = response[i]
+          .getElementsByClassName('common_sp_link')[0]
+          .children[0]
+          .attributes['src']
+          .toString();
+      print(pic);
+
+      var go = response[i]
+          .getElementsByClassName('common_sp_link')[0]
+          .attributes['href']
+          .toString();
+      if (go[0] == '/') {
+        recipe.add(picture(image: pic, title: name, url: go));
+      }
+    }
 
     setState(() {
       isLoading = false;
@@ -98,10 +108,8 @@ class _HomeState extends State<Home> {
                   elevation: 6,
                   color: Colors.green[300],
                   child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => first()),
-                    ),
+                    onTap: () => Get.toNamed('first',
+                        arguments: {"recipe": recipe[index].url}),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SingleChildScrollView(
@@ -124,7 +132,7 @@ class _HomeState extends State<Home> {
                               "${recipe[index].title}",
                               style: _style,
                             ),
-                            Text("${recipe[index].url}"),
+                            // Text("${recipe[index].url}"),
                           ],
                         ),
                       ),
